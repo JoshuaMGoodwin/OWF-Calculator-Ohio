@@ -1,0 +1,226 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>
+OWF Calculator
+</title>
+
+<style>
+
+    h1 {
+        color: red;
+        font-family: serif;
+        font-size: large;
+    }
+    
+    table {
+        border: solid 2px black;
+        alignment-adjust: central
+    }
+
+</style>
+
+<script>
+
+var countableEarnedIncome = 0;
+var countableIncome = 0;
+var deemedIncome = 0;
+var dependentCare = 0;
+var grossEarnedIncome = 0;
+var grossIncome = 0;
+var groupSize = 0;
+var initialEligibilityArray = [487,656,825,994,1163,1333,1502,1671,1840,2009,2178,2348];
+var initialEligibility = initialEligibilityArray[0];
+var OWFPaymentStandardArray = [282,386,473,582,682,759,848,940,1034,1127,1218,1312];
+var OWFPaymentStandard = OWFPaymentStandardArray[0];
+var unearnedIncome = 0;
+var grossCountable = 0;
+var payRate = "monthly"
+
+
+function Save() {
+
+if (isNaN(document.getElementById("AGSize").value) || document.getElementById("AGSize").value == 0) {
+	alert("Assistance Group Size must be a number and bigger than 0!");
+	document.getElementById("AGSize").value = 1;
+	initialEligibility = initialEligibilityArray[0];
+	OWFPaymentStandard = OWFPaymentStandardArray[0];
+	}
+	else {
+	groupSize = document.getElementById("AGSize").value;
+	initialEligibility = initialEligibilityArray[groupSize - 1];
+	OWFPaymentStandard = OWFPaymentStandardArray[groupSize - 1];
+	}	
+	
+if (isNaN(document.getElementById("GrossEarnedIncome").value)) {
+	alert("Gross Earned Income must be a number!");
+	document.getElementById("GrossEarnedIncome").value = 0;
+	}
+	else {
+	payRate = document.getElementById("PayRate").value;
+	switch (payRate) {
+	case "monthly":
+		grossEarnedIncome = Math.floor(parseFloat(document.getElementById("GrossEarnedIncome").value));
+		break;
+	case "bimonthly":
+		grossEarnedIncome = Math.floor(parseFloat(document.getElementById("GrossEarnedIncome").value)*2);
+		break;
+	case "biweekly":
+		grossEarnedIncome = Math.floor(parseFloat(document.getElementById("GrossEarnedIncome").value)*2.15);
+		break;
+	case "weekly":
+		grossEarnedIncome = Math.floor(parseFloat(document.getElementById("GrossEarnedIncome").value)*4.3);
+		break;
+		}
+		
+	
+	}
+
+if (isNaN(document.getElementById("DependentCare").value)) {
+	alert("Dependent Care costs must be a number!");
+	document.getElementById("DependentCare").value = 0;
+	}
+	else {
+	dependentCare = Math.floor(parseFloat(document.getElementById("DependentCare").value));
+	document.getElementById("DependentCare").value = dependentCare
+	}
+	
+	
+if (isNaN(document.getElementById("DeemedIncome").value)) {
+	alert("Deemed Income must be a number!");
+	document.getElementById("DeemedIncome").value = 0;
+	}
+	else {
+	deemedIncome = Math.floor(parseFloat(document.getElementById("DeemedIncome").value));
+	document.getElementById("DeemedIncome").value = deemedIncome;
+	}
+
+if (isNaN(document.getElementById("UnearnedIncome").value)) {
+	alert("Unearned Income must be a number!");
+	document.getElementById("UnearnedIncome").value = 0;
+	}
+	else {
+	unearnedIncome = Math.floor(parseFloat(document.getElementById("UnearnedIncome").value));
+	document.getElementById("UnearnedIncome").value = unearnedIncome
+	}
+	
+grossIncome = grossEarnedIncome - dependentCare + deemedIncome + unearnedIncome;
+
+grossCountable = Math.floor((grossEarnedIncome - 250)/2)
+if (grossCountable < 0) {
+	grossCountable = 0}
+	else {}
+
+
+
+countableIncome = grossCountable + deemedIncome + unearnedIncome - dependentCare;
+
+
+if (countableIncome <= 0) {
+	countableIncome=0; }
+	else {}
+
+}
+
+
+function ShowIncome () {
+
+var passFail;
+var commentOne;
+var commentTwo;
+
+
+if (grossIncome >= initialEligibility) {
+	passFail = "Ineligible. The Gross Income exceeds the Initial Eligibility Standard. O.A.C. 5101:1-23-20(H)(1).";
+        commentOne = "Your Gross Income is $" + grossIncome + ". This is the total of your income less dependent care expenses.";
+        commentTwo = "This exceeds the Initial Eligibility amount of $" + initialEligibility + " by $" + (grossIncome - initialEligibility) + ".";
+	}
+	else if (countableIncome >= OWFPaymentStandard){
+	passFail = "Ineligible. The Countable Income Exceeds the OWF Payment Standard. O.A.C. 5101:1-23-20(H)(2)(f).";
+        commentOne = "Your countable income is $" + countableIncome + ". O.A.C. 5101:1-23-20(H)(2).";
+		commentTwo = "This exceeds the OWF payment standard of $" + OWFPaymentStandard + " by $" + (countableIncome - OWFPaymentStandard); 
+	}
+	else {
+	passFail = "You are eligible for OWF in the amount of $" + (OWFPaymentStandard - countableIncome);
+	commentOne = "Your countable income is $" + countableIncome + ". O.A.C. 5101:1-23-20(H)(2).";
+	commentTwo = "The OWF Payment Standard is $" + OWFPaymentStandard + ".";
+	}
+
+document.getElementById("displayResult").innerHTML=passFail;
+document.getElementById("CommentOne").innerHTML=commentOne;
+document.getElementById("CommentTwo").innerHTML=commentTwo;
+document.getElementById("CommentThree").innerHTML=commentThree;
+
+}
+
+
+
+</script>
+
+</head>
+
+<body>
+
+<h1>OWF CALCULATOR</h1><br>
+<h1>Current as of January 2015</h1><br>
+
+<table>
+<tr>
+<td> Case Name: </td> <td> <input type="text" id="CaseName"></td>
+</tr>
+
+<tr>
+<td>Case Number: </td> <td> <input type="text" id="CaseNumber"></td>
+</tr>
+
+<tr>
+<td> Date of Application: </td> <td> <input type="date" id="DateOfApplication"></td>
+</tr>
+
+</table>
+<br>
+<table>
+<tr>
+<td> Assistance Group Size: </td> <td> <input id="AGSize" onchange="Save();" value = 1></td>
+</tr>
+
+<tr>
+<td> Gross Earned Income: </td> <td> <input id="GrossEarnedIncome" onchange="Save();" value = 0 ></td>
+<td> 
+	<select id="PayRate" onchange="Save();">
+		<option value="monthly">per month</option>
+		<option value="bimonthly">bi-monthly</option>
+		<option value="biweekly">bi-weekly</option>
+		<option value="weekly">per week</option>
+	</select>
+</td>
+</tr>
+
+<tr>
+<td> Dependent Care (monthly): </td> <td> <input id="DependentCare" onchange="Save();" value = 0></td>
+</tr>
+
+<tr>
+<td> <a href="http://codes.ohio.gov/oac/5101:1-23-20.2" target="_blank">Deemed/Allocable Income:</a> </td> <td> <input id="DeemedIncome" onchange="Save();" value = 0></td>
+</tr>
+
+<tr>
+<td> Unearned Income: </td> <td> <input id="UnearnedIncome" onchange="Save();" value = 0> </td>
+</tr>
+
+</table>
+<br>
+<input type="button" onclick="ShowIncome();" value = "Submit">
+<br>
+<br>
+<div id="displayResult" style="font-weight: bold"></div><br>
+<div id="CommentOne"></div><br>
+<div id="CommentTwo"></div>
+<div id="CommentThree"></div>
+
+
+
+</body>
+
+</html>
